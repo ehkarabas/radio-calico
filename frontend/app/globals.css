@@ -1,0 +1,459 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tailwind v4 Custom Breakpoints */
+@theme {
+  --breakpoint-xxxs: 21.875rem;  /* 350px - Intermediate small devices için */
+  --breakpoint-xxs: 18.75rem;    /* 300px - Ultra small devices için */
+  --breakpoint-xs: 25rem;        /* 400px - Extra small devices için */
+  --breakpoint-ehlogo: 17.5rem;  /* 280px - Existing logo breakpoint */
+}
+
+/* Tailwind v4 CSS Variables with @layer base + @variant dark */
+@layer base {
+  :root {
+    /* Light Theme Variables */
+    --background: 0 0% 100%;           /* Pure white */
+    --foreground: 0 0% 10%;            /* Very dark text (black) */
+    --card: 0 0% 96%;                  /* Light gray for cards - VISIBLE */
+    --card-foreground: 0 0% 10%;       /* Dark text on cards */
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 96%;
+    --secondary: 0 0% 90%;             /* Medium gray for secondary areas */
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 95%;                 /* Light gray for muted areas */
+    --muted-foreground: 0 0% 42%;      /* Medium gray for secondary text */
+    --accent: 38 92% 50%;              /* Orange accent */
+    --accent-foreground: 0 0% 100%;    /* White text on accent */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 75%;                /* VISIBLE gray borders */
+    --input: 0 0% 75%;                 /* VISIBLE input borders */
+    --ring: 38 92% 50%;                /* Orange ring focus */
+    --radius: 0.5rem;
+    --btn-primary: 18 95% 53%;         /* Orange accent for primary buttons */
+    --btn-primary-foreground: 0 0% 100%; /* White text on primary buttons */
+    --btn-secondary: 0 0% 85%;         /* Light gray for secondary buttons */
+    --btn-secondary-foreground: 0 0% 10%; /* Dark text on secondary buttons */
+
+    @variant dark {
+      /* Dark Theme Variables - Override in Dark Mode */
+      --background: 220 13% 6%;          /* Dark background #0d1117 */
+      --foreground: 213 31% 91%;         /* Light text #f0f6fc */
+      --card: 220 13% 6%;
+      --card-foreground: 213 31% 91%;
+      --popover: 220 13% 6%;
+      --popover-foreground: 213 31% 91%;
+      --primary: 213 31% 91%;
+      --primary-foreground: 220 13% 6%;
+      --secondary: 215 14% 14%;          /* Dark gray for secondary areas #21262d */
+      --secondary-foreground: 213 31% 91%;
+      --muted: 215 14% 14%;              /* Dark gray for muted areas */
+      --muted-foreground: 217 11% 58%;   /* Medium gray for secondary text #8b949e */
+      --accent: 38 92% 50%;              /* Orange accent (consistent) */
+      --accent-foreground: 0 0% 100%;    /* White text on accent */
+      --destructive: 0 63% 31%;
+      --destructive-foreground: 0 0% 100%;
+      --border: 217 19% 20%;             /* Dark gray borders #30363d */
+      --input: 217 19% 20%;
+      --ring: 38 92% 50%;                /* Orange ring focus */
+      --btn-primary: 18 95% 53%;         /* Orange accent for primary buttons */
+      --btn-primary-foreground: 0 0% 100%; /* White text on primary buttons */
+      --btn-secondary: 215 14% 14%;      /* Dark gray for secondary buttons */
+      --btn-secondary-foreground: 213 31% 91%; /* Light text on secondary buttons */
+    }
+  }
+
+  /* Global base element styles */
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
+
+/* General Button Class - Universal cursor and hover */
+.btn {
+  cursor: pointer;
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
+
+/* Button Color Definitions - Updated for Light/Dark Theme */
+button.btn-success,
+.btn.btn-success {
+  background-color: rgb(34 197 94) !important; /* green-600 */
+  color: white !important;
+  cursor: pointer !important;
+  border-color: rgb(34 197 94) !important;
+}
+
+button.btn-success:hover,
+.btn.btn-success:hover {
+  background-color: rgb(21 128 61) !important; /* green-700 - darker on hover */
+  opacity: 0.9 !important;
+  border-color: rgb(21 128 61) !important;
+}
+
+button.btn-danger,
+.btn.btn-danger {
+  background-color: rgb(239 68 68) !important; /* red-500 */
+  color: white !important;
+  cursor: pointer !important;
+  border-color: rgb(239 68 68) !important;
+}
+
+button.btn-danger:hover,
+.btn.btn-danger:hover {
+  background-color: rgb(220 38 38) !important; /* red-600 - darker on hover */
+  opacity: 0.9 !important;
+  border-color: rgb(220 38 38) !important;
+}
+
+button.btn-warning,
+.btn.btn-warning {
+  background-color: rgb(202 138 4) !important; /* yellow-600 */
+  color: white !important;
+  cursor: pointer !important;
+  border-color: rgb(202 138 4) !important;
+}
+
+button.btn-warning:hover,
+.btn.btn-warning:hover {
+  background-color: rgb(161 98 7) !important; /* yellow-700 - darker on hover */
+  opacity: 0.9 !important;
+  border-color: rgb(161 98 7) !important;
+}
+
+button.btn-primary,
+.btn.btn-primary {
+  background-color: hsl(var(--btn-primary)) !important;
+  color: hsl(var(--btn-primary-foreground)) !important;
+  cursor: pointer !important;
+  border-color: hsl(var(--btn-primary)) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+button.btn-primary:hover,
+.btn.btn-primary:hover {
+  background-color: hsl(25 95% 43%) !important; /* Darker orange on hover */
+  color: hsl(var(--btn-primary-foreground)) !important;
+  transform: translateY(-1px) !important;
+  border-color: hsl(25 95% 43%) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+button.btn-secondary,
+.btn.btn-secondary {
+  background-color: hsl(var(--btn-secondary)) !important;
+  color: hsl(var(--btn-secondary-foreground)) !important;
+  cursor: pointer !important;
+  border-color: hsl(var(--btn-secondary)) !important;
+}
+
+button.btn-secondary:hover,
+.btn.btn-secondary:hover {
+  background-color: hsl(var(--btn-secondary)) !important;
+  opacity: 0.8 !important;
+  border-color: hsl(var(--btn-secondary)) !important;
+}
+
+/* Button Blue - High Specificity for shadcn override */
+button.btn-blue,
+.btn.btn-blue {
+  background-color: rgb(96 165 250) !important; /* blue-400 */
+  color: white !important;
+  cursor: pointer !important;
+  border-color: rgb(96 165 250) !important;
+}
+
+button.btn-blue:hover,
+.btn.btn-blue:hover {
+  background-color: rgb(59 130 246) !important; /* blue-500 - darker on hover */
+  opacity: 0.9 !important;
+  border-color: rgb(59 130 246) !important;
+}
+
+.dark button.btn-blue,
+.dark .btn.btn-blue {
+  background-color: rgb(31, 98, 180) !important; /* blue-400 */
+  color: white !important;
+  cursor: pointer !important;
+  border-color: rgb(96 165 250) !important;
+}
+
+.dark button.btn-blue:hover,
+.dark .btn.btn-blue:hover {
+  background-color: rgb(77, 138, 237) !important; /* blue-500 - darker on hover */
+  opacity: 0.9 !important;
+  border-color: rgb(59 130 246) !important;
+}
+
+button.btn-neutral,
+.btn.btn-neutral {
+  background-color: rgb(188, 191, 196) !important; /* gray-400 */
+  color: black !important;
+  cursor: pointer !important;
+  border-color: rgb(156 163 175) !important;
+}
+
+button.btn-neutral:hover,
+.btn.btn-neutral:hover {
+  background-color: rgb(159, 162, 167) !important; /* gray-300 */
+  opacity: 0.8 !important;
+  border-color: rgb(209 213 219) !important;
+}
+
+.dark button.btn-neutral,
+.dark .btn.btn-neutral {
+  background-color: rgb(75 85 99) !important; /* dark:bg-gray-600 */
+  color: white !important;
+  border-color: rgb(75 85 99) !important;
+}
+
+.dark button.btn-neutral:hover,
+.dark .btn.btn-neutral:hover {
+  background-color: rgb(107 114 128) !important; /* dark:hover:bg-gray-500 */
+  border-color: rgb(107 114 128) !important;
+}
+
+button.btn-orange,
+.btn.btn-orange {
+  background-color: hsl(15 95% 53%) !important; /* Orange background */
+  color: hsl(0 0% 100%) !important; /* White text */
+  cursor: pointer !important;
+  border-color: hsl(15 95% 53%) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+button.btn-orange:hover,
+.btn.btn-orange:hover {
+  background-color: hsl(25 95% 43%) !important; /* Darker orange on hover */
+  transform: translateY(-1px) !important;
+  border-color: hsl(25 95% 43%) !important;
+}
+
+/* Disabled button styles */
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+  opacity: 0.5;
+}
+
+/* Dialog Overlay - Completely Opaque */
+[data-radix-dialog-overlay] {
+  background-color: hsl(var(--background) / 0.95) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* Dialog Content - Completely Opaque */
+[data-radix-dialog-content] {
+  background-color: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.dark [data-radix-dialog-content] {
+  background-color: hsl(var(--card)) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Custom Utility Classes - For CSS Variables */
+.bg-background {
+  background-color: hsl(var(--background)) !important;
+}
+
+.bg-foreground {
+  background-color: hsl(var(--foreground)) !important;
+}
+
+.bg-card {
+  background-color: hsl(var(--card)) !important;
+}
+
+.bg-primary {
+  background-color: hsl(var(--primary)) !important;
+}
+
+.bg-secondary {
+  background-color: hsl(var(--secondary)) !important;
+}
+
+.bg-muted {
+  background-color: hsl(var(--muted)) !important;
+}
+
+.text-foreground {
+  color: hsl(var(--foreground)) !important;
+}
+
+.text-background {
+  color: hsl(var(--background)) !important;
+}
+
+.text-muted-foreground {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.text-primary {
+  color: hsl(var(--primary)) !important;
+}
+
+.text-secondary-foreground {
+  color: hsl(var(--secondary-foreground)) !important;
+}
+
+.border-border {
+  border-color: hsl(var(--border)) !important;
+}
+
+/* Status-Specific Text Colors for Auth Components */
+.text-success {
+  color: rgb(19, 116, 55) !important; /* green-600 */
+}
+
+.dark .text-success {
+  color: rgb(74 222 128) !important; /* dark:text-green-400 */
+}
+
+.text-info {
+  color: rgb(37 99 235) !important; /* blue-600 */
+}
+
+.dark .text-info {
+  color: rgb(96 165 250) !important; /* dark:text-blue-400 */
+}
+
+.text-warning {
+  color: rgb(217 119 6) !important; /* orange-600 */
+}
+
+.dark .text-warning {
+  color: rgb(251 146 60) !important; /* dark:text-orange-400 */
+}
+
+.text-error {
+  color: rgb(220 38 38) !important; /* red-600 */
+}
+
+.dark .text-error {
+  color: rgb(248 113 113) !important; /* dark:text-red-400 */
+}
+
+/* Icon Circle Background Colors for Auth Components */
+.bg-success-icon {
+  background-color: rgb(220 252 231) !important; /* green-100 */
+}
+
+.dark .bg-success-icon {
+  background-color: rgb(20 83 45 / 0.2) !important; /* dark:bg-green-900/20 */
+}
+
+.bg-info-icon {
+  background-color: rgb(219 234 254) !important; /* blue-100 */
+}
+
+.dark .bg-info-icon {
+  background-color: rgb(30 58 138 / 0.2) !important; /* dark:bg-blue-900/20 */
+}
+
+.bg-warning-icon {
+  background-color: rgb(255 237 213) !important; /* orange-100 */
+}
+
+.dark .bg-warning-icon {
+  background-color: rgb(154 52 18 / 0.2) !important; /* dark:bg-orange-900/20 */
+}
+
+.bg-error-icon {
+  background-color: rgb(254 226 226) !important; /* red-100 */
+}
+
+.dark .bg-error-icon {
+  background-color: rgb(127 29 29 / 0.2) !important; /* dark:bg-red-900/20 */
+}
+
+/* Status Background Colors for Auth Components */
+.bg-success-light {
+  background-color: rgb(240 253 244) !important; /* green-50 */
+}
+
+.dark .bg-success-light {
+  background-color: rgb(20 83 45 / 0.1) !important; /* dark:bg-green-900/10 */
+}
+
+.bg-info-light {
+  background-color: rgb(239 246 255) !important; /* blue-50 */
+}
+
+.dark .bg-info-light {
+  background-color: rgb(30 58 138 / 0.2) !important; /* dark:bg-blue-900/20 */
+}
+
+.bg-warning-light {
+  background-color: rgb(255 247 237) !important; /* orange-50 */
+}
+
+.dark .bg-warning-light {
+  background-color: rgb(154 52 18 / 0.1) !important; /* dark:bg-orange-900/10 */
+}
+
+.bg-error-light {
+  background-color: rgb(254 242 242) !important; /* red-50 */
+}
+
+.dark .bg-error-light {
+  background-color: rgb(127 29 29 / 0.2) !important; /* dark:bg-red-900/20 */
+}
+
+/* Status Border Colors for Auth Components */
+.border-success {
+  border-color: rgb(34 197 94) !important; /* green-600 */
+}
+
+.dark .border-success {
+  border-color: rgb(34 197 94) !important; /* dark:border-green-600 */
+}
+
+.border-success-light {
+  border-color: rgb(187 247 208) !important; /* green-200 */
+}
+
+.dark .border-success-light {
+  border-color: rgb(22 101 52) !important; /* dark:border-green-800 */
+}
+
+.border-info-light {
+  border-color: rgb(191 219 254) !important; /* blue-200 */
+}
+
+.dark .border-info-light {
+  border-color: rgb(30 58 138) !important; /* dark:border-blue-800 */
+}
+
+.border-warning-light {
+  border-color: rgb(254 215 170) !important; /* orange-200 */
+}
+
+.dark .border-warning-light {
+  border-color: rgb(154 52 18) !important; /* dark:border-orange-800 */
+}
+
+.border-error-light {
+  border-color: rgb(254 202 202) !important; /* red-200 */
+}
+
+.dark .border-error-light {
+  border-color: rgb(127 29 29) !important; /* dark:border-red-800 */
+}

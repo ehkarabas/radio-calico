@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": true,
+    "declaration": true,
+    "declarationMap": true,
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@radio-calico/types": ["./types"],
+      "@radio-calico/shared": ["./shared"]
+    }
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./frontend"
+    }
+  ],
+  "include": [],
+  "exclude": ["node_modules", "**/node_modules/*"]
+}

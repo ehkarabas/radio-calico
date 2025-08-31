@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Disallow private user pages from search engines
+Disallow: /profile/
+Disallow: /auth/
+
+# Allow specific auth pages for SEO
+Allow: /auth$
+Allow: /auth/reset-password$
+
+# Sitemap location
+Sitemap: https://radio-calico-ehkarabas.vercel.app/sitemap.xml

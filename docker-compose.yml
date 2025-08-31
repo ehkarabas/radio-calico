@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:17.6-alpine3.22
+    container_name: radio-calico-postgres
+    restart: unless-stopped
+    ports:
+      - "5433:5432"  # host:container - Host'un 5433 port'u container'ın 5432 port'una map ediliyor, Windows'ta PostgreSQL kurulmuşsa 5433 port'u kullanılır
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: radio_calico
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - radio-calico-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d radio_calico"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  radio-calico-network:
+    driver: bridge
