@@ -457,3 +457,10 @@ button.btn-orange:hover,
 .dark .border-error-light {
   border-color: rgb(127 29 29) !important; /* dark:border-red-800 */
 }
+
+/* Mobile Toast Hiding - Hide toasts below 480px (30rem) as per CLAUDE.local.md requirements */
+@media (max-width: 480px) {
+  .mobile-toast-hidden {
+    display: none !important;
+  }
+}
