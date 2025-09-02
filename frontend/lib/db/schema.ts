@@ -93,20 +93,49 @@ export const AuthRateLimitSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
 })
-// Track schema - Core track information for radio streaming
+// Global Track schema - Core track information shared across all users
 export const TrackSchema = z.object({
   id: z.string(),
   title: z.string().min(1, "Track title is required"),
   artist: z.string().min(1, "Artist name is required"),
   album: z.string().nullable(),
-  coverArt: z.string().nullable(),
+  date: z.string().nullable(), // Year as string
+  albumArt: z.string().nullable(), // Unique album art URL
   duration: z.number().nullable(), // Duration in seconds
   streamUrl: z.string().nullable(), // Optional direct track URL
   isrc: z.string().nullable(), // International Standard Recording Code
+  bitDepth: z.number().nullable(),
+  sampleRate: z.number().nullable(),
+  isNew: z.boolean().default(false),
+  isSummer: z.boolean().default(false),
+  isVidgames: z.boolean().default(false),
+  prevData: z.any().nullable(), // JSON data for previous tracks
+  
+  // Global track statistics
+  usersListened: z.array(z.string()), // Array of user IDs
+  totalListens: z.number().default(0),
+  upvotes: z.number().default(0),
+  downvotes: z.number().default(0),
+  rating: z.number().default(0), // Calculated global rating
+  favoriteCount: z.number().default(0),
+  
+  // Track metadata
+  firstListenedAt: z.date(),
+  lastListenedAt: z.date(),
+  deletedAt: z.date().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+})
+
+// UserTrack schema - Individual user's relationship with tracks
+export const UserTrackSchema = z.object({
+  id: z.string(),
   userId: z.string(),
+  trackId: z.string(),
   listenedAt: z.date(),
   isFavorite: z.boolean().default(false),
-  rating: z.number().min(0).max(5).nullable(), // 0-5 rating system
+  userRating: z.number().min(-1).max(1).nullable(), // -1 downvote, 1 upvote, null no vote
+  listenCount: z.number().default(1),
   deletedAt: z.date().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -136,6 +165,7 @@ export type PasswordReset = z.infer<typeof PasswordResetSchema>
 export type MagicLink = z.infer<typeof MagicLinkSchema>
 export type AuthRateLimit = z.infer<typeof AuthRateLimitSchema>
 export type Track = z.infer<typeof TrackSchema>
+export type UserTrack = z.infer<typeof UserTrackSchema>
 export type UserPreferences = z.infer<typeof UserPreferencesSchema>
 
 // Authentication Form Schemas
@@ -199,7 +229,7 @@ export const CreateTrackSchema = z.object({
   title: z.string().min(1, "Track title is required").max(200, "Title too long"),
   artist: z.string().min(1, "Artist name is required").max(100, "Artist name too long"),
   album: z.string().max(100, "Album name too long").nullable().optional(),
-  coverArt: z.string().url("Invalid cover art URL").nullable().optional(),
+  albumArt: z.string().url("Invalid album art URL").nullable().optional(),
   duration: z.number().min(0, "Duration cannot be negative").nullable().optional(),
   streamUrl: z.string().url("Invalid stream URL").nullable().optional(),
   isrc: z.string().max(20, "ISRC code too long").nullable().optional(),
@@ -209,16 +239,15 @@ export const UpdateTrackSchema = z.object({
   title: z.string().min(1, "Track title is required").max(200, "Title too long").optional(),
   artist: z.string().min(1, "Artist name is required").max(100, "Artist name too long").optional(),
   album: z.string().max(100, "Album name too long").nullable().optional(),
-  coverArt: z.string().url("Invalid cover art URL").nullable().optional(),
-  isFavorite: z.boolean().optional(),
-  rating: z.number().min(0).max(5).nullable().optional(),
+  albumArt: z.string().url("Invalid album art URL").nullable().optional(),
 })
 
-export const TrackRatingSchema = z.object({
-  rating: z.number().min(0, "Rating cannot be negative").max(5, "Rating cannot exceed 5"),
+// UserTrack management schemas
+export const UserTrackRatingSchema = z.object({
+  userRating: z.number().min(-1, "Rating must be -1, 0, or 1").max(1, "Rating must be -1, 0, or 1").nullable(),
 })
 
-export const TrackFavoriteSchema = z.object({
+export const UserTrackFavoriteSchema = z.object({
   isFavorite: z.boolean(),
 })
 
@@ -239,28 +268,54 @@ export const TrackSearchSchema = z.object({
     artist: z.string().max(100).optional(),
     album: z.string().max(100).optional(),
     isFavorite: z.boolean().optional(),
-    rating: z.number().min(0).max(5).optional(),
+    userRating: z.number().min(-1).max(1).optional(),
+    globalRating: z.number().min(0).max(5).optional(),
     dateFrom: z.date().optional(),
     dateTo: z.date().optional(),
   }).optional(),
-  sort: z.enum(['newest', 'oldest', 'title', 'artist', 'rating']).default('newest'),
+  sort: z.enum(['newest', 'oldest', 'title', 'artist', 'globalRating', 'totalListens']).default('newest'),
   limit: z.number().min(1).max(100).default(20),
   offset: z.number().min(0).default(0),
 })
 
+// Enhanced track response schema that includes both global and user-specific data
+export const TrackWithUserDataSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  artist: z.string(),
+  album: z.string().nullable(),
+  albumArt: z.string().nullable(),
+  // Global track data
+  globalRating: z.number(),
+  totalListens: z.number(),
+  upvotes: z.number(),
+  downvotes: z.number(),
+  favoriteCount: z.number(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  // User-specific data
+  isFavorite: z.boolean(),
+  userRating: z.number().nullable(),
+  listenedAt: z.date(),
+  listenCount: z.number(),
+  userId: z.string(), // For backward compatibility
+})
+
 // API Response schemas
 export const TrackListResponseSchema = z.object({
-  tracks: z.array(TrackSchema),
-  total: z.number(),
+  tracks: z.array(TrackWithUserDataSchema),
   hasMore: z.boolean(),
-  nextOffset: z.number().nullable(),
 })
 
 export const FavoriteTracksResponseSchema = z.object({
-  tracks: z.array(TrackSchema),
-  total: z.number(),
-  page: z.number(),
-  totalPages: z.number(),
+  favorites: z.array(TrackWithUserDataSchema),
+  pagination: z.object({
+    page: z.number(),
+    limit: z.number(),
+    total: z.number(),
+    pages: z.number(),
+    hasMore: z.boolean(),
+  }),
 })
 
 // Authentication Form Input Types
@@ -276,9 +331,10 @@ export type EmailVerificationConfirmInput = z.infer<typeof EmailVerificationConf
 export type UpdateUserInput = z.infer<typeof UpdateUserSchema>
 export type CreateTrackInput = z.infer<typeof CreateTrackSchema>
 export type UpdateTrackInput = z.infer<typeof UpdateTrackSchema>
-export type TrackRatingInput = z.infer<typeof TrackRatingSchema>
-export type TrackFavoriteInput = z.infer<typeof TrackFavoriteSchema>
+export type UserTrackRatingInput = z.infer<typeof UserTrackRatingSchema>
+export type UserTrackFavoriteInput = z.infer<typeof UserTrackFavoriteSchema>
 export type UpdateUserPreferencesInput = z.infer<typeof UpdateUserPreferencesSchema>
 export type TrackSearchInput = z.infer<typeof TrackSearchSchema>
+export type TrackWithUserData = z.infer<typeof TrackWithUserDataSchema>
 export type TrackListResponse = z.infer<typeof TrackListResponseSchema>
 export type FavoriteTracksResponse = z.infer<typeof FavoriteTracksResponseSchema>

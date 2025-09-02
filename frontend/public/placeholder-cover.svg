@@ -1,0 +1,13 @@
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="300" fill="#f3f4f6"/>
+  <g transform="translate(150,150)">
+    <circle cx="0" cy="0" r="50" fill="#9ca3af" opacity="0.5"/>
+    <path d="M-20 -25 L-20 25 L20 0 Z" fill="#6b7280"/>
+  </g>
+  <text x="150" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6b7280">
+    Radio Calico
+  </text>
+  <text x="150" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#9ca3af">
+    Now Playing
+  </text>
+</svg>
