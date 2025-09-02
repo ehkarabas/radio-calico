@@ -24,7 +24,7 @@ model User {
   authenticators Authenticator[]
   passwordResets PasswordReset[]
   sessions       Session[]
-  tracks         Track[]
+  userTracks     UserTrack[]
   preferences    UserPreferences?
 
   @@map("users")
@@ -162,26 +162,47 @@ model Authenticator {
 }
 
 model Track {
-  id         String    @id @default(cuid())
-  title      String
-  artist     String
-  album      String?
-  coverArt   String?
-  duration   Int?
-  streamUrl  String?
-  isrc       String?
-  userId     String
-  listenedAt DateTime  @default(now())
-  isFavorite Boolean   @default(false)
-  rating     Int?
-  deletedAt  DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String    @id @default(cuid())
+  title          String
+  artist         String
+  album          String?
+  date           String?   // year as string to match metadata
+  albumArt       String?   // unique album art URL for each track
+  duration       Int?
+  streamUrl      String?
+  isrc           String?
+  bitDepth       Int?
+  sampleRate     Int?
+  isNew          Boolean   @default(false)
+  isSummer       Boolean   @default(false)
+  isVidgames     Boolean   @default(false)
+  prevData       Json?     // store previous tracks data as JSON
+  
+  // Global track data - not user specific
+  usersListened  String[]  // Array of user IDs who listened to this track
+  totalListens   Int       @default(0) // Total listen count across all users
+  upvotes        Int       @default(0) // Global upvote count
+  downvotes      Int       @default(0) // Global downvote count  
+  rating         Float?    @default(0) // Calculated rating based on votes
+  favoriteCount  Int       @default(0) // How many users favorited this track
+  
+  // Track creation metadata
+  firstListenedAt DateTime  @default(now()) // When track was first discovered
+  lastListenedAt  DateTime  @default(now()) // When track was last played
+  deletedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  userTracks     UserTrack[]
 
-  @@index([userId, listenedAt(sort: Desc)])
-  @@index([userId, isFavorite])
-  @@index([userId, deletedAt])
+  // Unique constraint: one track per title+artist+album combination globally
+  @@unique([title, artist, album], name: "unique_track_combination")
+  @@index([usersListened])
+  @@index([lastListenedAt(sort: Desc)])
+  @@index([favoriteCount(sort: Desc)])
+  @@index([rating(sort: Desc)])
+  @@index([totalListens(sort: Desc)])
   @@map("tracks")
 }
 
@@ -200,4 +221,28 @@ model UserPreferences {
   user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_preferences")
+}
+
+model UserTrack {
+  id          String    @id @default(cuid())
+  userId      String
+  trackId     String
+  listenedAt  DateTime  @default(now())
+  isFavorite  Boolean   @default(false)
+  userRating  Int?      // User's individual rating (-1 for downvote, 1 for upvote)
+  listenCount Int       @default(1) // How many times this user listened to this track
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track       Track     @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  // Each user can have only one record per track
+  @@unique([userId, trackId], name: "unique_user_track")
+  @@index([userId, listenedAt(sort: Desc)])
+  @@index([userId, isFavorite])
+  @@index([trackId, userId])
+  @@map("user_tracks")
 }
